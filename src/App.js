@@ -1,10 +1,10 @@
-import logo from "./logo.svg";
 import { Provider } from "react-redux";
 import { combineReducers, createStore } from "redux";
 import { useEffect, useState, useCallback } from "react";
 import { Routes, Route, useNavigate } from "react-router";
-import Main from "./view/Main/Main";
 import "./assets/default/default.css";
+
+import Main from "./controller/Main/Main";
 
 function App() {
   const [loginUser, setLoginUser] = useState({ name: "성민", age: 28 });

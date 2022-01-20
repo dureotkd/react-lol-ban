@@ -1,5 +1,5 @@
 "use strict";
-const { db } = require("../Core/database");
+const { db } = require("./databas");
 
 class Core {
   constructor(props) {}
