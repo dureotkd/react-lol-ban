@@ -1,0 +1,375 @@
+* {
+  box-sizing: border-box;
+}
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: Merriweather Sans, sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 24px;
+  background: #15171b;
+  color: #fff;
+}
+html {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+}
+.App {
+  text-align: center;
+  max-width: 1024px;
+  margin: 0 auto;
+  background: #15171b;
+  position: relative;
+}
+@-webkit-keyframes active-grow {
+  0% {
+    height: 0;
+  }
+  to {
+    height: 14px;
+  }
+}
+@keyframes active-grow {
+  0% {
+    height: 0;
+  }
+  to {
+    height: 14px;
+  }
+}
+.champion {
+  display: inline-block;
+  font-size: 11px;
+  width: 75px;
+  height: 75px;
+  text-align: center;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 9px;
+}
+.champion-icon {
+  margin: 0 auto;
+  background-repeat: no-repeat;
+}
+.team {
+  display: inline-block;
+  width: 49%;
+  text-align: left;
+}
+.team,
+.team h1 {
+  position: relative;
+}
+.team h1 {
+  font-family: Merriweather Sans, sans-serif;
+  font-weight: 800;
+  margin: 0;
+  padding: 0 180px 0 10px;
+  line-height: 79px;
+  text-transform: uppercase;
+  font-size: 36px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.team-phase {
+  right: 100px;
+}
+.team-phase,
+.team-timer {
+  display: none;
+  position: absolute;
+}
+.team-timer {
+  right: 20px;
+  font-size: 28px;
+  text-align: right;
+}
+.team:last-of-type .team-timer {
+  right: auto;
+  left: 20px;
+  text-align: left;
+}
+.current-team .team-phase,
+.current-team .team-timer {
+  display: inline-block;
+}
+.team:first-of-type {
+  float: left;
+}
+.team:last-of-type {
+  float: right;
+  text-align: right;
+}
+.team:last-of-type h1 {
+  padding: 0 10px 0 180px;
+}
+.team:last-of-type .team-phase {
+  right: auto;
+  left: 100px;
+}
+.team:last-of-type .pick-image {
+  background-color: #1c0508;
+}
+.pick {
+  width: 20%;
+  display: inline-block;
+  text-align: center;
+  position: relative;
+  padding: 2px;
+}
+.pick img {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.confirm {
+  background: #fff;
+  color: #000;
+  text-transform: uppercase;
+  border: 0;
+  outline: 0;
+  text-align: center;
+  line-height: 30px;
+  font-family: Merriweather Sans, sans-serif;
+  font-weight: 800;
+  font-size: 21px;
+  margin: 0;
+  padding: 0 20px;
+  display: inline-block;
+  position: absolute;
+  right: 0;
+  top: 20px;
+  cursor: pointer;
+}
+.confirm[disabled] {
+  background: #515151;
+}
+.pick-image .active {
+  height: 14px;
+  display: inline-block;
+  position: absolute;
+  bottom: 0;
+  background: #0a4264;
+  width: 100%;
+  left: 0;
+  -webkit-animation: active-grow 1 0.35s ease-out;
+  animation: active-grow 1 0.35s ease-out;
+}
+.bans .pick-image .active {
+  bottom: auto;
+  top: 0;
+}
+.team:last-of-type .pick-image .active {
+  background: #be2038;
+}
+.picking {
+  clear: both;
+  background: #000;
+}
+.pick-image {
+  width: 100%;
+  padding-top: 181%;
+  background: #010a0f;
+  position: relative;
+  margin-top: 2px;
+  margin-bottom: -4px;
+  transition: background-color 0.35s ease-out;
+}
+.team-picks.bans .pick-image:after {
+  content: " ";
+  display: block;
+  width: 56px;
+  height: 56px;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  -webkit-transform: translate(-50%);
+  -ms-transform: translate(-50%);
+  transform: translate(-50%);
+}
+.team:last-of-type .team-picks.bans .pick-image:after {
+  -webkit-transform: translate(-50%) rotate(90deg);
+  -ms-transform: translate(-50%) rotate(90deg);
+  transform: translate(-50%) rotate(90deg);
+}
+.pick-image.selected {
+  background: #0a4264;
+}
+.team:last-of-type .pick-image.selected {
+  background: #be2038;
+}
+.pick-image img {
+  opacity: 0;
+  transition: opacity 0.35s ease-out;
+}
+.pick-image.image-loaded img {
+  opacity: 1;
+}
+.picking input {
+  background-size: 20px;
+  border: 0;
+  outline: 0;
+  line-height: 30px;
+  height: 30px;
+  width: 264px;
+  padding: 0 40px;
+  font-weight: 800;
+  font-size: 16px;
+  color: #fff;
+  position: absolute;
+  left: 0;
+  top: 20px;
+}
+.team-picks {
+  background: #000;
+  border-radius: 4px;
+  margin-bottom: 40px;
+  padding: 0 2px;
+}
+.pick-name {
+  position: absolute;
+  font-size: 11px;
+  text-transform: uppercase;
+  text-align: center;
+  left: 50%;
+  -webkit-transform: translate(-50%, 15px);
+  -ms-transform: translate(-50%, 15px);
+  transform: translate(-50%, 15px);
+}
+.unavailable {
+  cursor: default;
+  opacity: 0.25;
+}
+.selection {
+  max-width: 400px;
+  margin: 0 auto;
+  position: relative;
+  height: 70px;
+}
+.background {
+  position: absolute;
+  background: linear-gradient(
+    90deg,
+    #141519,
+    #050506 15%,
+    #050506 85%,
+    #141519
+  );
+  height: 180px;
+  width: 100%;
+  top: 79px;
+}
+.background.second {
+  top: 300px;
+}
+.create {
+  max-width: 800px;
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.create label {
+  text-transform: uppercase;
+  display: block;
+  font-size: 21px;
+  margin: 10px 0;
+}
+.create img {
+  width: 50px;
+  margin: 50px auto;
+  display: block;
+}
+.create input,
+.create select {
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+  color: #fff;
+  display: block;
+  border: 0;
+  outline: none;
+  padding: 0 20px;
+  font-size: 21px;
+  background: #000;
+  margin: 0 0 40px;
+}
+#red_team_name {
+  background: #be2038;
+}
+#blue_team_name {
+  background: #0a4264;
+}
+label[for="red_team_name"] span {
+  color: #be2038;
+  font-size: 18px;
+  margin-left: 10px;
+}
+label[for="blue_team_name"] span {
+  color: #0a4264;
+  font-size: 18px;
+  margin-left: 10px;
+}
+.create .confirm {
+  position: static;
+  margin: 0 auto;
+  display: block;
+  transition: all.3s;
+}
+.readyCheck {
+  position: static;
+}
+.loading {
+  width: 50px;
+  height: 50px;
+  position: relative;
+  margin: 20px auto;
+}
+.loading1 {
+  background: #0a4264;
+}
+.loading1,
+.loading2 {
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.loading2 {
+  background: #be2038;
+}
+.loading_container {
+  overflow: hidden;
+  position: absolute;
+  width: 100%;
+  height: 50%;
+  -webkit-animation: loading infinite 1s ease-out alternate;
+  animation: loading infinite 1s ease-out alternate;
+}
+@-webkit-keyframes loading {
+  0% {
+    height: 0;
+  }
+  to {
+    height: 100%;
+  }
+}
+@keyframes loading {
+  0% {
+    height: 0;
+  }
+  to {
+    height: 100%;
+  }
+}
+/*# sourceMappingURL=main.a0c8209b.css.map*/
