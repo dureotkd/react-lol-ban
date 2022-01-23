@@ -8,15 +8,47 @@ function Main() {
   const [redName, setRedName] = useState("");
   const [matchName, setMatchName] = useState("");
   const [submitDisabled, setSubmitDisabled] = useState(true);
+  const [setting, setSetting] = useState(false);
+  const [blueEnName, setBlueEnName] = useState("");
+  const [redEnName, setRedEnName] = useState("");
+  const [draftSeq, setDraftSeq] = useState("");
+
   const firstInputRef = useRef();
 
   const changeInput = useCallback(() => {
-    const lenth = blueName.length + redName.length + matchName.length;
+    const blueLen = blueName.length;
+    const redLen = redName.length;
+    const matchLen = matchName.length;
+    const totalLenth = blueLen + redLen + matchLen;
+    const validProc = [1];
 
-    if (lenth > 0) {
+    for (const valid of validProc) {
+      if (totalLenth === 0) {
+        setSubmitDisabled(true);
+        break;
+      }
+
+      if (blueLen === 0) {
+        setSubmitDisabled(true);
+        break;
+      }
+
+      if (redLen === 0) {
+        setSubmitDisabled(true);
+        break;
+      }
+
+      if (matchLen === 0) {
+        setSubmitDisabled(true);
+        break;
+      }
+
+      if (redName === blueName) {
+        setSubmitDisabled(true);
+        break;
+      }
+
       setSubmitDisabled(false);
-    } else {
-      setSubmitDisabled(true);
     }
   }, [blueName, redName, matchName]);
 
@@ -40,8 +72,13 @@ function Main() {
         matchName,
       },
     })
-      .then((res) => {
-        console.log(res);
+      .then(({ status, data }) => {
+        if (status === 200) {
+          setBlueEnName(data.blueEnName);
+          setRedEnName(data.redEnName);
+          setDraftSeq(data.seq);
+          setSetting(true);
+        }
       })
       .catch((e) => {})
       .then(() => {
@@ -57,6 +94,10 @@ function Main() {
       submitDisabled={submitDisabled}
       handleFormSubmit={handleFormSubmit}
       firstInputRef={firstInputRef}
+      setting={setting}
+      blueEnName={blueEnName}
+      redEnName={redEnName}
+      draftSeq={draftSeq}
     />
   );
 }

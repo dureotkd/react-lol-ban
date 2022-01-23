@@ -3,14 +3,55 @@
 const Core = require("../Core/index");
 
 class GameModel extends Core {
-  constructor() {}
+  constructor(props) {
+    super(props);
 
-  getGameRow() {
+    this.table = "game";
+    this.core = new Core();
+  }
+
+  getData({ sql, type }) {
+    const res = this.core.excute({
+      database: "ban",
+      sql: sql,
+      type: type,
+    });
+
+    return res;
+  }
+
+  getRow() {
     return "Row";
   }
 
-  getGameAll() {
+  getAll() {
     return "All";
+  }
+
+  getLastPk() {
+    const sql =
+      "SELECT a.`seq` FROM ban.`game` a ORDER BY a.`seq` DESC LIMIT 1";
+
+    const res = this.core.excute({
+      database: "ban",
+      sql: sql,
+      type: "row",
+    });
+
+    return res;
+  }
+
+  save(data) {
+    const table = this.table;
+    const sql = this.core.getInsertQuery({ table, data });
+
+    const res = this.core.excute({
+      database: "ban",
+      sql: sql,
+      type: "exec",
+    });
+
+    return res;
   }
 }
 

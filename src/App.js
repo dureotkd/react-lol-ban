@@ -5,6 +5,7 @@ import { Routes, Route, useNavigate } from "react-router";
 import "./assets/default/default.css";
 
 import Main from "./controller/Main/Main";
+import Draft from "./controller/Draft/Draft";
 
 function App() {
   const [loginUser, setLoginUser] = useState({ name: "성민", age: 28 });
@@ -33,6 +34,7 @@ function App() {
     <Provider store={store}>
       <Routes>
         <Route exact path="/" element={<Main />} />
+        <Route exact path="/Draft/:seq/:id" element={<Draft />} />
       </Routes>
     </Provider>
   );

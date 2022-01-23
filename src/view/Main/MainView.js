@@ -1,7 +1,31 @@
-import { connect } from "react-redux";
 import TextField from "@mui/material/TextField";
 
 export default function MainView(props) {
+  if (props.setting) {
+    return (
+      <div className="create">
+        <img
+          src="http://prodraft.leagueoflegends.com/static/media/L.95b4d320.svg"
+          alt="로고"
+        />
+        <label For="blue_team_name">Blue Team Link</label>
+        <input
+          type="text"
+          id="blue_team_name"
+          readonly
+          value={`localhost:3000/Draft/${props.draftSeq}/${props.blueEnName}`}
+        />
+        <label For="red_team_name">Red Team Link</label>
+        <input
+          type="text"
+          id="red_team_name"
+          readonly
+          value={`localhost:3000/Draft/${props.draftSeq}/${props.redEnName}`}
+        />
+      </div>
+    );
+  }
+
   return (
     <form className="create" onSubmit={props.handleFormSubmit.bind(this)}>
       <img

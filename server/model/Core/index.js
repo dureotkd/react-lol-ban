@@ -52,6 +52,7 @@ class Core {
                 break;
 
               case "exec":
+
                 resolve(data.insertId);
 
                 break;

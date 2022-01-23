@@ -1,0 +1,11 @@
+body {
+    background: #15171b !important;
+  }
+  
+  .Contents {
+    text-align: center;
+    max-width: 1024px;
+    margin: 0 auto;
+    position: relative;
+  }
+  

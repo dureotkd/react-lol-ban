@@ -5,6 +5,10 @@ const express = require("express");
 const app = express();
 const http = Http.createServer(app);
 const router = express.Router();
+const crypto = require("crypto");
+
+const gameModel = require("./model/Game/GameModel");
+const champModel = require("./model/Champ/ChampModel");
 
 const io = socketIo(http, {
   cors: {
@@ -30,10 +34,70 @@ router.get("/", (req, res) => {
   res.send("Hello RESTFUL API ");
 });
 
-router.get("/games", (req, res) => {
-  console.log(`games`);
+router.get("/games", async (req, res) => {
+  const { seq, id } = req.query;
+
+  let where = [
+    `a.seq = ${seq}`,
+    `(a.blueEnName = '${id}' OR a.redEnName = '${id}')`,
+  ];
+
+  let sql = `
+  SELECT 
+    * ,
+    CASE WHEN a.blueEnName = '${id}' THEN 'blueTeam' ELSE 'redTeam' END as myTeam
+  FROM 
+    ban.game a
+  WHERE %s`.replace("%s", where.join(" AND "));
+
+  const row = await gameModel.getData({
+    sql: sql,
+    type: "row",
+  });
+
+  res.send({
+    row,
+  });
 });
 
-router.patch("/games", (req, res) => {
-  console.log(req.query.blueName, "zzz");
+router.get("/champs", async (req, res) => {
+  const all = await champModel.getAll();
+
+  res.send({
+    all,
+  });
+});
+
+router.patch("/games", async (req, res) => {
+  const { blueName, redName, matchName } = req.query;
+
+  const blueEnKey = `${blueName}_${matchName}`;
+  const redEnKey = `${redName}_${matchName}`;
+  const { seq } = await gameModel.getLastPk();
+  const newSeq = seq + 1;
+
+  const blueEnName = crypto
+    .createHash("sha512")
+    .update(blueEnKey)
+    .digest("base64")
+    .replaceAll("/", "");
+  const redEnName = crypto
+    .createHash("sha512")
+    .update(redEnKey)
+    .digest("base64")
+    .replaceAll("/", "");
+
+  await gameModel.save({
+    blueName,
+    redName,
+    matchName,
+    blueEnName,
+    redEnName,
+  });
+
+  res.send({
+    blueEnName,
+    redEnName,
+    seq: newSeq,
+  });
 });

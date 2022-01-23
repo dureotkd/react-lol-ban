@@ -1,7 +1,7 @@
 "use strict";
 
 const mysql = require("mysql");
-const db = mysql.createFoolCluster();
+const db = mysql.createPoolCluster();
 
 db.add("ban", {
   host: "localhost",
