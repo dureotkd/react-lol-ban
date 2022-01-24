@@ -1,6 +1,79 @@
 import { ad, jg, mid, sup, top, drafMode } from "../../assets";
-import * as DraftCss from "../../assets/draft/draft.css";
+import "../../assets/draft/draft.css";
 import { empty, wait, champKorName } from "../../helper/default";
+import { debounce } from "lodash";
+
+function PickCard(props) {
+  return (
+    <div className="pick-card-wrap">
+      <div className="team-picks">
+        {props.blueCard &&
+          Object.values(props.blueCard).map((value, key) => {
+            return (
+              <div className="pick" key={value.tmpKey}>
+                <div className="pick-image">
+                  <span className=""></span>
+                </div>
+                <span className="pick-name"></span>
+              </div>
+            );
+          })}
+      </div>
+      <div className="team-picks">
+        {props.redCard &&
+          Object.values(props.redCard).map((value, key) => {
+            return (
+              <div className="pick" key={value.tmpKey}>
+                <div className="pick-image">
+                  <span className=""></span>
+                </div>
+                <span className="pick-name"></span>
+              </div>
+            );
+          })}
+      </div>
+    </div>
+  );
+}
+
+function BanCard(props) {
+  return (
+    <div className="pick-card-wrap">
+      <div className="team-picks">
+        {props.blueCard &&
+          Object.values(props.blueCard).map((value, key) => {
+            return (
+              <div className="pick" key={value.tmpKey}>
+                <div className="ben-pick-image">
+                  <span className=""></span>
+                  {!empty(value.img) ? (
+                    <img src={value.img} alt="챔피언 밴 이미지" />
+                  ) : null}
+                </div>
+                <span className="pick-name"></span>
+              </div>
+            );
+          })}
+      </div>
+      <div className="team-picks">
+        {props.blueCard &&
+          Object.values(props.redCard).map((value, key) => {
+            return (
+              <div className="pick" key={value.tmpKey}>
+                <div className="ben-pick-image">
+                  <span className=""></span>
+                  {!empty(value.img) ? (
+                    <img src={value.img} alt="챔피언 픽 이미지" />
+                  ) : null}
+                </div>
+                <span className="pick-name"></span>
+              </div>
+            );
+          })}
+      </div>
+    </div>
+  );
+}
 
 export default function DraftView(props) {
   const searchLineVo = [
@@ -62,27 +135,14 @@ export default function DraftView(props) {
       <div
         style={{
           transition: "all.3s",
-          opacity: props.gameStart ? 1 : 0,
-          display: props.gameStart ? "block" : "none",
         }}
       >
-        {/* <PickCard champPicks={picks} /> */}
-        {/* <BenCard champBens={bens} /> */}
+        <PickCard
+          blueCard={props.card.blue.pick}
+          redCard={props.card.red.pick}
+        />
+        <BanCard blueCard={props.card.blue.ban} redCard={props.card.red.ban} />
       </div>
-      <div
-        style={{
-          opacity: props.gameStart ? 0 : 1,
-          display: props.gameStart ? "none" : "flex",
-          height: "464px",
-          marginBottom: "20px",
-          background: "#000",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <p>잠시만 기다려주세요</p>
-      </div>
-      {/* <Chat handleSendMsg={handleSendMsg} chatScrollRef={chatScrollRef} /> */}
       <div className="champion-box">
         <div className="search-box">
           <div className="line-box">
@@ -108,17 +168,19 @@ export default function DraftView(props) {
           <input
             type="text"
             placeholder="챔피언 검색"
-            // onChange={debounce(handleSearchName, 200)}
+            onChange={debounce(props.handleSearchName, 200)}
           />
         </div>
-
         {props.champAll
           .filter((val) => {
             // 챔피언명 검색이 없을시
-            if (empty(props.searchName)) return val;
+            if (empty(props.searchName)) {
+              return val;
+            }
             // 챔피언명 검색시 (startsWith 앞글자 동일여부로  true : false 여부 반환)
-            else if (val.korName.startsWith(props.searchName)) return val;
-            else return true;
+            else if (val.korName.startsWith(props.searchName)) {
+              return val;
+            }
           })
           .map(({ cKey, line, seq, engName }) => {
             // 라인검색

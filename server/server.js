@@ -1,21 +1,13 @@
-const socketIo = require("socket.io");
-const Http = require("http");
 const cors = require("cors");
 const express = require("express");
 const app = express();
-const http = Http.createServer(app);
+const http = require("http").createServer(app);
 const router = express.Router();
 const crypto = require("crypto");
+const io = require("socket.io")(http, { cors: { origin: "*" } });
 
 const gameModel = require("./model/Game/GameModel");
 const champModel = require("./model/Champ/ChampModel");
-
-const io = socketIo(http, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-});
 
 app.use(cors());
 
@@ -28,6 +20,32 @@ app.use("/api", express.urlencoded({ extended: false }), router);
 
 http.listen(8080, (req, res) => {
   console.log(`서버를 요청 받을 준비가 되었습니다 👩`);
+});
+
+const rooms = {};
+
+io.on("connection", (socket) => {
+  console.log(`소켓 서버가 연결되었습니다 👨`);
+
+  const socketId = socket.idl;
+
+  socket.on("joinDraft", ({ seq, id }) => {
+    console.log(seq, id);
+
+    socket.join(seq);
+
+    if (rooms[socketId] === undefined) {
+      rooms[socketId] = seq;
+    }
+
+    io.to(seq).emit("joinDraft");
+  });
+
+  socket.on("disconnect", () => {
+    delete rooms[socketId];
+
+    console.log(`소켓 서버가 종료되었습니다 👩‍🦳`);
+  });
 });
 
 router.get("/", (req, res) => {

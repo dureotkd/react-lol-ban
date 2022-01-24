@@ -7,6 +7,83 @@ html {
   scroll-behavior: smooth;
 }
 
+.create {
+  max-width: 800px;
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.create img {
+  width: 50px;
+  margin: 50px auto;
+  display: block;
+}
+
+.create label {
+  text-transform: uppercase;
+  display: block;
+  font-size: 21px;
+  margin: 10px 0;
+}
+
+#blue_team_name {
+  background: #0a4264;
+}
+
+#red_team_name {
+  background: #be2038;
+}
+
+.create .confirm {
+  position: static;
+  margin: 0 auto;
+  display: block;
+  transition: all.3s;
+}
+
+.confirm {
+  background: #fff;
+  color: #000;
+  text-transform: uppercase;
+  border: 0;
+  outline: 0;
+  text-align: center;
+  line-height: 30px;
+  font-family: Merriweather Sans, sans-serif;
+  font-weight: 800;
+  font-size: 21px;
+  margin: 0;
+  padding: 0 20px;
+  display: inline-block;
+  position: absolute;
+  right: 0;
+  top: 20px;
+  cursor: pointer;
+}
+
+.confirm[disabled] {
+  background: #515151;
+}
+
+.create input,
+.create select {
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+  color: #fff;
+  display: block;
+  border: 0;
+  outline: none;
+  padding: 0 20px;
+  font-size: 21px;
+  background: #000;
+  margin: 0 0 40px;
+}
+
 * {
   box-sizing: border-box;
   margin: 0px;
@@ -22,8 +99,10 @@ a {
   color: inherit;
 }
 
-p {
+p,
+label {
   margin: 0px;
+  color: white;
 }
 
 h1,
@@ -236,7 +315,7 @@ main {
 }
 
 .pick {
-  width: 19%;
+  width: 20%;
   display: inline-block;
   text-align: center;
   position: relative;

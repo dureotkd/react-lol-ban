@@ -1,4 +1,5 @@
-import TextField from "@mui/material/TextField";
+import "../../assets/default/default.css";
+
 
 export default function MainView(props) {
   if (props.setting) {

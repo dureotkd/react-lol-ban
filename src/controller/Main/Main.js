@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { useEffect, useCallback, useState, useRef } from "react";
 import MainView from "../../view/Main/MainView";
 
+
 function Main() {
   const [blueName, setBlueName] = useState("");
   const [redName, setRedName] = useState("");
