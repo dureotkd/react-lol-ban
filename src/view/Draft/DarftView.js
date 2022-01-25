@@ -1,6 +1,6 @@
-import { ad, jg, mid, sup, top, drafMode } from "../../assets";
+import { ad, jg, mid, sup, top } from "../../assets";
 import "../../assets/draft/draft.css";
-import { empty, wait, champKorName } from "../../helper/default";
+import { empty } from "../../helper/default";
 import { debounce } from "lodash";
 
 function PickCard(props) {
@@ -182,7 +182,7 @@ export default function DraftView(props) {
               return val;
             }
           })
-          .map(({ cKey, line, seq, engName }) => {
+          .map(({ cKey, line, seq, engName, korName }) => {
             // 라인검색
             if (!empty(props.searchLine) && props.searchLine !== line)
               return true;
@@ -199,10 +199,14 @@ export default function DraftView(props) {
                   // style={{
                   //   opacity: disabled ? "0.3" : null,
                   // }}
-                  src={`https://ddragon.leagueoflegends.com/cdn/10.11.1/img/champion/${engName}.png`}
+                  src={
+                    cKey < 1000
+                      ? `https://ddragon.leagueoflegends.com/cdn/10.11.1/img/champion/${engName}.png`
+                      : process.env.PUBLIC_URL + `/champ/${engName}.png`
+                  }
                 />
                 <div style={{ marginBottom: 20, marginTop: 3 }}>
-                  <p style={{ color: "white" }}>{champKorName(cKey)}</p>
+                  <p style={{ color: "white" }}>{korName}</p>
                 </div>
               </div>
             );

@@ -38,6 +38,10 @@ html {
   background: #be2038;
 }
 
+#watch_team_name {
+  background: #146356;
+}
+
 .create .confirm {
   position: static;
   margin: 0 auto;
@@ -246,7 +250,6 @@ main {
   min-width: 1024px;
   width: 1024px;
   min-height: 1024px;
-  height: 1024px;
 }
 
 .competion {

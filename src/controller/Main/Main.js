@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { useEffect, useCallback, useState, useRef } from "react";
 import MainView from "../../view/Main/MainView";
 
-
 function Main() {
   const [blueName, setBlueName] = useState("");
   const [redName, setRedName] = useState("");
@@ -12,6 +11,7 @@ function Main() {
   const [setting, setSetting] = useState(false);
   const [blueEnName, setBlueEnName] = useState("");
   const [redEnName, setRedEnName] = useState("");
+  const [watchEnName, setWatchEnName] = useState("");
   const [draftSeq, setDraftSeq] = useState("");
 
   const firstInputRef = useRef();
@@ -75,10 +75,14 @@ function Main() {
     })
       .then(({ status, data }) => {
         if (status === 200) {
+          console.log(data);
           setBlueEnName(data.blueEnName);
           setRedEnName(data.redEnName);
+          setWatchEnName(data.watchEnName);
           setDraftSeq(data.seq);
           setSetting(true);
+        } else if (status === 500) {
+          alert("서버 오류");
         }
       })
       .catch((e) => {})
@@ -98,6 +102,7 @@ function Main() {
       setting={setting}
       blueEnName={blueEnName}
       redEnName={redEnName}
+      watchEnName={watchEnName}
       draftSeq={draftSeq}
     />
   );

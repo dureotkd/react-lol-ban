@@ -1,6 +1,5 @@
 import "../../assets/default/default.css";
 
-
 export default function MainView(props) {
   if (props.setting) {
     return (
@@ -22,6 +21,13 @@ export default function MainView(props) {
           id="red_team_name"
           readonly
           value={`localhost:3000/Draft/${props.draftSeq}/${props.redEnName}`}
+        />
+        <label For="red_team_name">Watch Team Link</label>
+        <input
+          type="text"
+          id="watch_team_name"
+          readonly
+          value={`localhost:3000/Draft/${props.draftSeq}/${props.watchEnName}`}
         />
       </div>
     );

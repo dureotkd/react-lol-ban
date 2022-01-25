@@ -6,7 +6,7 @@ const db = mysql.createPoolCluster();
 db.add("ban", {
   host: "localhost",
   user: "root",
-  password: "",
+  password: "@slsksh33@",
   database: "ban",
   port: 3306,
 });

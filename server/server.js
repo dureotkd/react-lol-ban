@@ -57,13 +57,16 @@ router.get("/games", async (req, res) => {
 
   let where = [
     `a.seq = ${seq}`,
-    `(a.blueEnName = '${id}' OR a.redEnName = '${id}')`,
+    `(a.blueEnName = '${id}' OR a.redEnName = '${id}' OR a.watchEnName = '${id}')`,
   ];
 
   let sql = `
   SELECT 
     * ,
-    CASE WHEN a.blueEnName = '${id}' THEN 'blueTeam' ELSE 'redTeam' END as myTeam
+    CASE 
+    WHEN a.blueEnName = '${id}' THEN 'blueTeam' 
+    WHEN a.redEnName = '${id}' THEN 'redTeam'
+    ELSE 'watchTeam' END as myTeam
   FROM 
     ban.game a
   WHERE %s`.replace("%s", where.join(" AND "));
@@ -91,7 +94,11 @@ router.patch("/games", async (req, res) => {
 
   const blueEnKey = `${blueName}_${matchName}`;
   const redEnKey = `${redName}_${matchName}`;
+  const watchEnKey = `watch_${matchName}`;
   const { seq } = await gameModel.getLastPk();
+
+  if (!seq) res.status(500).send();
+
   const newSeq = seq + 1;
 
   const blueEnName = crypto
@@ -105,17 +112,25 @@ router.patch("/games", async (req, res) => {
     .digest("base64")
     .replaceAll("/", "");
 
+  const watchEnName = crypto
+    .createHash("sha512")
+    .update(watchEnKey)
+    .digest("base64")
+    .replaceAll("/", "");
+
   await gameModel.save({
     blueName,
     redName,
     matchName,
     blueEnName,
     redEnName,
+    watchEnName,
   });
 
   res.send({
     blueEnName,
     redEnName,
+    watchEnName,
     seq: newSeq,
   });
 });
