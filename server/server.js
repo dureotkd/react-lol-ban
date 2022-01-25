@@ -23,26 +23,79 @@ http.listen(8080, (req, res) => {
 });
 
 const rooms = {};
+const watch = {};
+const intervalControl = {
+  obj: null,
+  start: (seq, second, team) => {
+    if (this.obj !== undefined) {
+      clearInterval(this.obj);
+      io.to(seq).emit("stopSecond", second, team);
+    }
+    this.obj = setInterval(() => {
+      second--;
+
+      io.to(seq).emit("startSecond", second, team);
+    }, 1000);
+  },
+};
 
 io.on("connection", (socket) => {
   console.log(`소켓 서버가 연결되었습니다 👨`);
 
-  const socketId = socket.idl;
+  const socketId = socket.id;
 
-  socket.on("joinDraft", ({ seq, id }) => {
-    console.log(seq, id);
-
+  socket.on("joinDraft", (seq) => {
     socket.join(seq);
+  });
 
-    if (rooms[socketId] === undefined) {
-      rooms[socketId] = seq;
+  socket.on("watchDraftState", ({ seq, myTeam }) => {
+    switch (myTeam) {
+      default:
+        if (rooms[socketId] === undefined) {
+          rooms[socketId] = seq;
+        }
+        break;
+
+      case "watchTeam":
+        if (watch[socketId] === undefined) {
+          watch[socketId] = seq;
+        }
+        break;
     }
 
-    io.to(seq).emit("joinDraft");
+    const nowPlayer = Object.values(rooms).reduce((before, after) => {
+      return {
+        ...before,
+        [after]: before[after] ? (before[after] += 1) : 1,
+      };
+    }, {});
+
+    const nowPlayerCnt = nowPlayer[seq] ? nowPlayer[seq] : 0;
+
+    io.to(seq).emit("watchDraftState", nowPlayerCnt);
+
+    const watchNow = Object.values(watch).reduce((before, after) => {
+      return {
+        ...before,
+        [after]: before[after] ? before[after] + 1 : 1,
+      };
+    }, {});
+
+    const watchNowCnt = watchNow[seq];
+
+    io.to(seq).emit("watchNowCnt", watchNowCnt);
+  });
+
+  socket.on("startSecond", async ({ seq, second }) => {
+    // intervalControl.start(seq, second["blue"], "blue");
+    // await wait(10000);
+    // intervalControl.start(seq, second["red"], "red");
+    // await wait(10000);
   });
 
   socket.on("disconnect", () => {
     delete rooms[socketId];
+    delete watch[socketId];
 
     console.log(`소켓 서버가 종료되었습니다 👩‍🦳`);
   });
@@ -134,3 +187,6 @@ router.patch("/games", async (req, res) => {
     seq: newSeq,
   });
 });
+
+const wait = (timeToDelay) =>
+  new Promise((resolve) => setTimeout(resolve, timeToDelay));

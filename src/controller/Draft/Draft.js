@@ -13,16 +13,22 @@ function Draft(props) {
   const [searchLine, setSearchLine] = useState("");
   const [searchName, setSearchName] = useState("");
   const [gameStart, setGameStart] = useState(true);
+  const [second, setSecond] = useState({
+    blue: 60,
+    red: 60,
+  });
   const [card, setCard] = useState({
-    red: {
-      pick: {},
-      ban: {},
-    },
     blue: {
       pick: {},
       ban: {},
     },
+    red: {
+      pick: {},
+      ban: {},
+    },
   });
+
+  let [watchTeamCnt, setWatchTeamCnt] = useState(0);
 
   const setBaseDraftCard = () => {
     const cloneCard = { ...card };
@@ -57,17 +63,9 @@ function Draft(props) {
     setCard(cloneCard);
   };
 
-  const setSocket = () => {
-    const socket = io("http://localhost:8080");
-
-    socket.emit("joinDraft", { seq, id });
-
-    socket.on("joinDraft", () => {
-      alert("join Here!");
-    });
-  };
-
   const getDraft = useCallback(async () => {
+    setBaseDraftCard();
+
     await axios({
       method: "get",
       url: "http://localhost:8080/api/games",
@@ -79,6 +77,7 @@ function Draft(props) {
       .then(({ status, data }) => {
         if (status === 200) {
           setDraft(data.row);
+          setSocket(data.row);
         }
       })
       .catch(() => {})
@@ -102,14 +101,60 @@ function Draft(props) {
       });
   }, [seq, id]);
 
+  const setSocket = (draftData) => {
+    document.addEventListener("beforeunload", () => {
+      alert("?");
+    });
+
+    const myTeam = draftData.myTeam;
+    const socket = io("http://localhost:8080");
+
+    socket.emit("joinDraft", seq);
+
+    socket.emit("watchDraftState", { seq, myTeam });
+
+    socket.emit("startSecond", { seq, second });
+
+    socket.on("startSecond", (changeSecond, team) => {
+      const cloneSecond = { ...second };
+
+      cloneSecond[team] = changeSecond;
+
+      setSecond(cloneSecond);
+    });
+
+    socket.on("stopSecond", (changeSecond, team) => {
+      const cloneSecond = { ...second };
+
+      cloneSecond[team] = changeSecond;
+
+      setSecond(cloneSecond);
+    });
+
+    /**
+     * 블루,레드팀 참여자 확인
+     */
+    socket.on("joinDraft", () => {});
+
+    /**
+     * 게임 상태를 주기적으로 확인합니다
+     */
+    socket.on("watchDraftState", (cnt) => {
+      // alert(cnt);
+    });
+
+    /**
+     * 관전자가 몇명인지 확인합니다
+     */
+    socket.on("watchNowCnt", (cnt) => {
+      console.log(cnt);
+      setWatchTeamCnt(cnt);
+    });
+  };
+
   useEffect(() => {
     getDraft();
   }, [getDraft]);
-
-  useEffect(() => {
-    setBaseDraftCard();
-    setSocket();
-  }, []);
 
   /**
    * 라인 검색
@@ -138,6 +183,8 @@ function Draft(props) {
       searchLine={searchLine}
       searchName={searchName}
       card={card}
+      watchTeamCnt={watchTeamCnt}
+      second={second}
     />
   );
 }

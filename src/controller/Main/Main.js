@@ -13,7 +13,6 @@ function Main() {
   const [redEnName, setRedEnName] = useState("");
   const [watchEnName, setWatchEnName] = useState("");
   const [draftSeq, setDraftSeq] = useState("");
-
   const firstInputRef = useRef();
 
   const changeInput = useCallback(() => {

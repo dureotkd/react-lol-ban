@@ -2,6 +2,7 @@ import { ad, jg, mid, sup, top } from "../../assets";
 import "../../assets/draft/draft.css";
 import { empty } from "../../helper/default";
 import { debounce } from "lodash";
+import { FcManager } from "react-icons/fc";
 
 function PickCard(props) {
   return (
@@ -106,6 +107,12 @@ export default function DraftView(props) {
 
   return (
     <div className="Contents">
+      {props.watchTeamCnt === 0 ? null : (
+        <div className="watch">
+          <FcManager style={{ fontSize: 20, marginRight: 6 }} />{" "}
+          <span>{props.watchTeamCnt}</span>
+        </div>
+      )}
       <div className="competion">
         <div
           style={{
@@ -119,12 +126,12 @@ export default function DraftView(props) {
               {props.draft.blueName}
             </h1>
             <div className="team-img">
-              <span id="blue-second">BLUE SECOND</span>
+              <span id="blue-second">{props.second["blue"]}</span>
             </div>
           </div>
           <div className="team-wrap">
             <div className="team-img red-team">
-              <span id="red-second">RED SECOND</span>
+              <span id="red-second">{props.second["red"]}</span>
             </div>
             <h1 style={{ fontSize: 23, marginRight: 12 }}>
               {props.draft.redName}

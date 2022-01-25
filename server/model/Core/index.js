@@ -1,5 +1,5 @@
 "use strict";
-const { db } = require("./databas");
+const { db } = require("./database");
 
 class Core {
   constructor(props) {}
@@ -52,7 +52,6 @@ class Core {
                 break;
 
               case "exec":
-
                 resolve(data.insertId);
 
                 break;
