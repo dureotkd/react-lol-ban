@@ -7,12 +7,14 @@ import { useHistory, useParams } from "react-router-dom";
 import { useEffect, useCallback, useState, useRef } from "react";
 
 function Draft(props) {
+  const socket = io("http://localhost:8080");
   const { seq, id } = useParams();
   const [draft, setDraft] = useState({});
   const [champAll, setChampAll] = useState([]);
   const [searchLine, setSearchLine] = useState("");
   const [searchName, setSearchName] = useState("");
   const [gameStart, setGameStart] = useState(true);
+  const [turn, setTurn] = useState(0);
   const [second, setSecond] = useState({
     blue: 60,
     red: 60,
@@ -102,12 +104,7 @@ function Draft(props) {
   }, [seq, id]);
 
   const setSocket = (draftData) => {
-    document.addEventListener("beforeunload", () => {
-      alert("?");
-    });
-
     const myTeam = draftData.myTeam;
-    const socket = io("http://localhost:8080");
 
     socket.emit("joinDraft", seq);
 
@@ -115,6 +112,9 @@ function Draft(props) {
 
     socket.emit("startSecond", { seq, second });
 
+    /**
+     * 픽시간을 시작합니다
+     */
     socket.on("startSecond", (changeSecond, team) => {
       const cloneSecond = { ...second };
 
@@ -123,6 +123,9 @@ function Draft(props) {
       setSecond(cloneSecond);
     });
 
+    /**
+     * 픽시간을 제어합니다
+     */
     socket.on("stopSecond", (changeSecond, team) => {
       const cloneSecond = { ...second };
 
@@ -147,8 +150,27 @@ function Draft(props) {
      * 관전자가 몇명인지 확인합니다
      */
     socket.on("watchNowCnt", (cnt) => {
-      console.log(cnt);
       setWatchTeamCnt(cnt);
+    });
+
+    /**
+     * 밴픽 소켓통신을 제어합니다
+     */
+    socket.on("handlePick", (cloneCard, turnAdd) => {
+      setTurn(turnAdd);
+      setCard(cloneCard);
+    });
+  };
+
+  const handlePick = ({ cKey, engName }) => {
+    const cloneCard = { ...card };
+
+    socket.emit("handlePick", {
+      cloneCard,
+      cKey,
+      engName,
+      turn,
+      seq,
     });
   };
 
@@ -178,13 +200,14 @@ function Draft(props) {
       draft={draft}
       champAll={champAll}
       gameStart={gameStart}
-      handleSearchLine={handleSearchLine}
-      handleSearchName={handleSearchName}
       searchLine={searchLine}
       searchName={searchName}
       card={card}
       watchTeamCnt={watchTeamCnt}
       second={second}
+      handleSearchLine={handleSearchLine}
+      handleSearchName={handleSearchName}
+      handlePick={handlePick}
     />
   );
 }

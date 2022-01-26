@@ -1,8 +1,10 @@
-import { ad, jg, mid, sup, top } from "../../assets";
-import "../../assets/draft/draft.css";
-import { empty } from "../../helper/default";
 import { debounce } from "lodash";
+import FadeIn from "react-fade-in";
+import "../../assets/draft/draft.css";
 import { FcManager } from "react-icons/fc";
+import { empty } from "../../helper/default";
+import { OpacityImage } from "../../component";
+import { ad, jg, mid, sup, top } from "../../assets";
 
 function PickCard(props) {
   return (
@@ -14,6 +16,9 @@ function PickCard(props) {
               <div className="pick" key={value.tmpKey}>
                 <div className="pick-image">
                   <span className=""></span>
+                  {!empty(value.img) ? (
+                    <OpacityImage duration={100} type="show" src={value.img} />
+                  ) : null}
                 </div>
                 <span className="pick-name"></span>
               </div>
@@ -27,6 +32,9 @@ function PickCard(props) {
               <div className="pick" key={value.tmpKey}>
                 <div className="pick-image">
                   <span className=""></span>
+                  {!empty(value.img) ? (
+                    <OpacityImage duration={100} type="show" src={value.img} />
+                  ) : null}
                 </div>
                 <span className="pick-name"></span>
               </div>
@@ -48,7 +56,7 @@ function BanCard(props) {
                 <div className="ben-pick-image">
                   <span className=""></span>
                   {!empty(value.img) ? (
-                    <img src={value.img} alt="챔피언 밴 이미지" />
+                    <OpacityImage duration={100} type="show" src={value.img} />
                   ) : null}
                 </div>
                 <span className="pick-name"></span>
@@ -64,7 +72,7 @@ function BanCard(props) {
                 <div className="ben-pick-image">
                   <span className=""></span>
                   {!empty(value.img) ? (
-                    <img src={value.img} alt="챔피언 픽 이미지" />
+                    <OpacityImage duration={100} type="show" src={value.img} />
                   ) : null}
                 </div>
                 <span className="pick-name"></span>
@@ -198,7 +206,7 @@ export default function DraftView(props) {
               <div
                 className="champion"
                 key={cKey}
-                // onClick={handlePick.bind(this, { cKey, engName })}
+                onClick={props.handlePick.bind(this, { cKey, engName })}
               >
                 <img
                   className="champion-icon"

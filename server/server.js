@@ -93,6 +93,28 @@ io.on("connection", (socket) => {
     // await wait(10000);
   });
 
+  socket.on("handlePick", ({ cloneCard, cKey, engName, turn, seq }) => {
+    const turnTeam = turn % 2 === 0 ? "blue" : "red";
+    const turnAction = turn < 10 ? "ban" : "pick";
+    const turnAdd = turn + 1;
+    const turnCard = cloneCard[turnTeam][turnAction];
+
+    for (const key in turnCard) {
+      if (!turnCard[key].code) {
+        cloneCard[turnTeam][turnAction][key] = {
+          tmpKey: cKey,
+          img: `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${engName}_0.jpg`,
+          code: cKey,
+          name: engName,
+        };
+
+        break;
+      }
+    }
+
+    io.to(seq).emit("handlePick", cloneCard, turnAdd);
+  });
+
   socket.on("disconnect", () => {
     delete rooms[socketId];
     delete watch[socketId];
