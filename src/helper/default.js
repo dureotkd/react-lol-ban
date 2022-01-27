@@ -16,6 +16,21 @@ const empty = function (value) {
   }
 };
 
+const isActive = ({ turn, key, action, team }) => {
+  const turnTeam = turn % 2 === 0 ? "blue" : "red";
+  const turnAction = turn < 10 ? "ban" : "pick";
+  const turnkey = turn < 5 ? turn : turn % 5;
+  let active = false;
+
+  if (turnkey === key && turnTeam === team && action === turnAction) {
+    active = true;
+  }
+
+  console.log(turn);
+
+  return active;
+};
+
 const getImageConvertParam = (src) => {
   return `https://img1.daumcdn.net/thumb/C120x120.fjpg/?fname=${src}`;
 };
@@ -520,4 +535,4 @@ const champKorName = ($id) => {
   return $a;
 };
 
-export { empty, wait, champKorName, getImageConvertParam };
+export { empty, wait, champKorName, getImageConvertParam, isActive };

@@ -1,5 +1,4 @@
 import { debounce } from "lodash";
-import FadeIn from "react-fade-in";
 import "../../assets/draft/draft.css";
 import { FcManager } from "react-icons/fc";
 import { empty } from "../../helper/default";
@@ -14,8 +13,8 @@ function PickCard(props) {
           Object.values(props.blueCard).map((value, key) => {
             return (
               <div className="pick" key={value.tmpKey}>
-                <div className="pick-image">
-                  <span className=""></span>
+                <div className="pick-image blue-team-card">
+                  <span className={value.active}></span>
                   {!empty(value.img) ? (
                     <OpacityImage duration={100} type="show" src={value.img} />
                   ) : null}
@@ -30,8 +29,8 @@ function PickCard(props) {
           Object.values(props.redCard).map((value, key) => {
             return (
               <div className="pick" key={value.tmpKey}>
-                <div className="pick-image">
-                  <span className=""></span>
+                <div className="pick-image red-team-card">
+                  <span className={value.active}></span>
                   {!empty(value.img) ? (
                     <OpacityImage duration={100} type="show" src={value.img} />
                   ) : null}
@@ -53,8 +52,8 @@ function BanCard(props) {
           Object.values(props.blueCard).map((value, key) => {
             return (
               <div className="pick" key={value.tmpKey}>
-                <div className="ben-pick-image">
-                  <span className=""></span>
+                <div className="ben-pick-image blue-team-card">
+                  <span className={value.active}></span>
                   {!empty(value.img) ? (
                     <OpacityImage duration={100} type="show" src={value.img} />
                   ) : null}
@@ -69,8 +68,8 @@ function BanCard(props) {
           Object.values(props.redCard).map((value, key) => {
             return (
               <div className="pick" key={value.tmpKey}>
-                <div className="ben-pick-image">
-                  <span className=""></span>
+                <div className="ben-pick-image red-team-card">
+                  <span className={value.active}></span>
                   {!empty(value.img) ? (
                     <OpacityImage duration={100} type="show" src={value.img} />
                   ) : null}
@@ -211,9 +210,9 @@ export default function DraftView(props) {
                 <img
                   className="champion-icon"
                   alt="롤 챔피언 아이콘"
-                  // style={{
-                  //   opacity: disabled ? "0.3" : null,
-                  // }}
+                  style={{
+                    opacity: props.activeCard.includes(engName) ? "0.4" : null,
+                  }}
                   src={
                     cKey < 1000
                       ? `https://ddragon.leagueoflegends.com/cdn/10.11.1/img/champion/${engName}.png`
@@ -221,7 +220,16 @@ export default function DraftView(props) {
                   }
                 />
                 <div style={{ marginBottom: 20, marginTop: 3 }}>
-                  <p style={{ color: "white" }}>{korName}</p>
+                  <p
+                    style={{
+                      color: "white",
+                      opacity: props.activeCard.includes(engName)
+                        ? "0.4"
+                        : null,
+                    }}
+                  >
+                    {korName}
+                  </p>
                 </div>
               </div>
             );

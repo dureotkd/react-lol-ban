@@ -386,7 +386,6 @@ main {
   display: inline-block;
   position: absolute;
   bottom: 0;
-  background: #0a4264;
   width: 100%;
   left: 0;
   -webkit-animation: active-grow 1 0.35s ease-out;

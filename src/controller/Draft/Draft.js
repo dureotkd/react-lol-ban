@@ -1,19 +1,20 @@
 import axios from "axios";
 import io from "socket.io-client";
 import { connect } from "react-redux";
-import queryString from "query-string";
+import { useParams } from "react-router-dom";
 import DraftView from "../../view/Draft/DarftView";
-import { useHistory, useParams } from "react-router-dom";
-import { useEffect, useCallback, useState, useRef } from "react";
+import { useEffect, useCallback, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Draft(props) {
+  const navigate = useNavigate();
   const socket = io("http://localhost:8080");
   const { seq, id } = useParams();
   const [draft, setDraft] = useState({});
   const [champAll, setChampAll] = useState([]);
   const [searchLine, setSearchLine] = useState("");
   const [searchName, setSearchName] = useState("");
-  const [gameStart, setGameStart] = useState(true);
+  const [activeCard, setActiveCard] = useState([]);
   const [turn, setTurn] = useState(0);
   const [second, setSecond] = useState({
     blue: 60,
@@ -36,29 +37,33 @@ function Draft(props) {
     const cloneCard = { ...card };
 
     for (let i = 0; i < 5; i++) {
-      cloneCard.red.pick[i] = {
-        tmpKey: Math.random() * 10000,
-        code: null,
-        name: null,
-        img: null,
-      };
-      cloneCard.red.ban[i] = {
-        tmpKey: Math.random() * 10000,
-        code: null,
-        name: null,
-        img: null,
-      };
       cloneCard.blue.pick[i] = {
         tmpKey: Math.random() * 10000,
         code: null,
         name: null,
         img: null,
+        active: null,
       };
       cloneCard.blue.ban[i] = {
         tmpKey: Math.random() * 10000,
         code: null,
         name: null,
         img: null,
+        active: i === 0 ? "active" : null,
+      };
+      cloneCard.red.pick[i] = {
+        tmpKey: Math.random() * 10000,
+        code: null,
+        name: null,
+        img: null,
+        active: null,
+      };
+      cloneCard.red.ban[i] = {
+        tmpKey: Math.random() * 10000,
+        code: null,
+        name: null,
+        img: null,
+        active: null,
       };
     }
 
@@ -140,10 +145,22 @@ function Draft(props) {
     socket.on("joinDraft", () => {});
 
     /**
-     * 게임 상태를 주기적으로 확인합니다
+     * 대전을 시작합니다
      */
-    socket.on("watchDraftState", (cnt) => {
-      // alert(cnt);
+    socket.on("startDraft", () => {
+      // alert("게임을 시작합니다");
+    });
+
+    /**
+     * 방이 꽉찼습니다
+     */
+    socket.on("fullDraft", () => {
+      alert("방이 꽉찼습니다 \n 관전자 모드로 변경합니다");
+
+      navigate(
+        `/Draft/${seq}/vlPZzt5szrcuUqDunQmJQ4sRBzLiE6EQfZBnnwWdeRCSXHmVJNQQjNB2xVSxRiO2usanT2APsZnXXkXSoQfw==`,
+        { replace: true }
+      );
     });
 
     /**
@@ -156,19 +173,64 @@ function Draft(props) {
     /**
      * 밴픽 소켓통신을 제어합니다
      */
-    socket.on("handlePick", (cloneCard, turnAdd) => {
-      setTurn(turnAdd);
-      setCard(cloneCard);
-    });
+    socket.on(
+      "handlePick",
+      ({
+        cloneCard,
+        turnAdd,
+        engName,
+        cloneActiveCard,
+        turnTeam,
+        turnAction,
+      }) => {
+        setTurn(turnAdd);
+        setActiveCard(cloneActiveCard);
+        setCard(cloneCard);
+      }
+    );
   };
 
+  /**
+   *
+   * @param {*} engName
+   * @returns
+   */
+  const checkNormalPick = (engName) => {
+    if (activeCard.includes(engName)) {
+      return false;
+    }
+
+    const turnTeam = turn % 2 === 0 ? "blue" : "red";
+    console.log(draft, activeCard);
+
+    if (turnTeam !== draft.myTeam) {
+      return false;
+    }
+
+    return true;
+  };
+
+  /**
+   *
+   * @param {*} param0
+   * @returns
+   */
   const handlePick = ({ cKey, engName }) => {
+    const isNormal = checkNormalPick(engName);
+
+    if (!isNormal) {
+      return;
+    }
+
     const cloneCard = { ...card };
+    const cloneActiveCard = [...activeCard];
 
     socket.emit("handlePick", {
       cloneCard,
+      cloneActiveCard,
       cKey,
       engName,
+      activeCard,
       turn,
       seq,
     });
@@ -199,12 +261,13 @@ function Draft(props) {
     <DraftView
       draft={draft}
       champAll={champAll}
-      gameStart={gameStart}
       searchLine={searchLine}
       searchName={searchName}
       card={card}
       watchTeamCnt={watchTeamCnt}
       second={second}
+      turn={turn}
+      activeCard={activeCard}
       handleSearchLine={handleSearchLine}
       handleSearchName={handleSearchName}
       handlePick={handlePick}
