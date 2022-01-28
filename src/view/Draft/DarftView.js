@@ -114,12 +114,12 @@ export default function DraftView(props) {
 
   return (
     <div className="Contents">
-      {props.watchTeamCnt === 0 ? null : (
+      {/* {props.watchTeamCnt === 0 ? null : (
         <div className="watch">
           <FcManager style={{ fontSize: 20, marginRight: 6 }} />{" "}
           <span>{props.watchTeamCnt}</span>
         </div>
-      )}
+      )} */}
       <div className="competion">
         <div
           style={{
@@ -211,7 +211,10 @@ export default function DraftView(props) {
                   className="champion-icon"
                   alt="롤 챔피언 아이콘"
                   style={{
-                    opacity: props.activeCard.includes(engName) ? "0.4" : null,
+                    opacity:
+                      props.activeCard.includes(engName) || !props.startGame
+                        ? "0.4"
+                        : null,
                   }}
                   src={
                     cKey < 1000

@@ -8,13 +8,14 @@ import { useNavigate } from "react-router-dom";
 
 function Draft(props) {
   const navigate = useNavigate();
-  const socket = io("http://localhost:8080");
   const { seq, id } = useParams();
   const [draft, setDraft] = useState({});
   const [champAll, setChampAll] = useState([]);
   const [searchLine, setSearchLine] = useState("");
   const [searchName, setSearchName] = useState("");
   const [activeCard, setActiveCard] = useState([]);
+  const [socketObj, setSocketObj] = useState(null);
+  const [startGame, setStartGame] = useState(false);
   const [turn, setTurn] = useState(0);
   const [second, setSecond] = useState({
     blue: 60,
@@ -71,8 +72,6 @@ function Draft(props) {
   };
 
   const getDraft = useCallback(async () => {
-    setBaseDraftCard();
-
     await axios({
       method: "get",
       url: "http://localhost:8080/api/games",
@@ -109,11 +108,18 @@ function Draft(props) {
   }, [seq, id]);
 
   const setSocket = (draftData) => {
+    const socket = io("http://localhost:8080");
+    setSocketObj(socket);
+
     const myTeam = draftData.myTeam;
 
     socket.emit("joinDraft", seq);
 
-    socket.emit("watchDraftState", { seq, myTeam });
+    socket.emit("watchDraftState", {
+      seq,
+      myTeam,
+      watchId: draftData.watchEnName,
+    });
 
     socket.emit("startSecond", { seq, second });
 
@@ -148,19 +154,16 @@ function Draft(props) {
      * 대전을 시작합니다
      */
     socket.on("startDraft", () => {
-      // alert("게임을 시작합니다");
+      setStartGame(true);
     });
 
     /**
      * 방이 꽉찼습니다
      */
-    socket.on("fullDraft", () => {
+    socket.on("fullDraft", (watchId) => {
       alert("방이 꽉찼습니다 \n 관전자 모드로 변경합니다");
 
-      navigate(
-        `/Draft/${seq}/vlPZzt5szrcuUqDunQmJQ4sRBzLiE6EQfZBnnwWdeRCSXHmVJNQQjNB2xVSxRiO2usanT2APsZnXXkXSoQfw==`,
-        { replace: true }
-      );
+      navigate(`/Draft/${seq}/${watchId}`, { replace: true });
     });
 
     /**
@@ -183,6 +186,8 @@ function Draft(props) {
         turnTeam,
         turnAction,
       }) => {
+        if (turnAdd > 20) return;
+
         setTurn(turnAdd);
         setActiveCard(cloneActiveCard);
         setCard(cloneCard);
@@ -201,7 +206,6 @@ function Draft(props) {
     }
 
     const turnTeam = turn % 2 === 0 ? "blue" : "red";
-    console.log(draft, activeCard);
 
     if (turnTeam !== draft.myTeam) {
       return false;
@@ -216,6 +220,10 @@ function Draft(props) {
    * @returns
    */
   const handlePick = ({ cKey, engName }) => {
+    if (!startGame) {
+      return;
+    }
+
     const isNormal = checkNormalPick(engName);
 
     if (!isNormal) {
@@ -225,7 +233,7 @@ function Draft(props) {
     const cloneCard = { ...card };
     const cloneActiveCard = [...activeCard];
 
-    socket.emit("handlePick", {
+    socketObj.emit("handlePick", {
       cloneCard,
       cloneActiveCard,
       cKey,
@@ -237,6 +245,7 @@ function Draft(props) {
   };
 
   useEffect(() => {
+    setBaseDraftCard();
     getDraft();
   }, [getDraft]);
 
@@ -271,6 +280,7 @@ function Draft(props) {
       handleSearchLine={handleSearchLine}
       handleSearchName={handleSearchName}
       handlePick={handlePick}
+      startGame={startGame}
     />
   );
 }

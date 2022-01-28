@@ -1,7 +1,11 @@
 const { http } = require("../http/http");
-const io = require("socket.io")(http, { cors: { origin: "*" } });
+const io = require("socket.io")(http, {
+  // transport: ["websocket"],
+  cors: { origin: "*" },
+});
 
-const player = [];
+const test = {};
+const player = {};
 const rooms = {};
 const watch = {};
 const intervalControl = {
@@ -22,32 +26,26 @@ const intervalControl = {
 io.on("connection", (socket) => {
   console.log(`소켓 서버가 연결되었습니다 👨`);
 
+  test[socket] = 1;
+
   const socketId = socket.id;
 
   socket.on("joinDraft", (seq) => {
     socket.join(seq);
   });
 
-  socket.on("watchDraftState", ({ seq, myTeam }) => {
+  socket.on("watchDraftState", ({ seq, myTeam, watchId }) => {
     switch (myTeam) {
       case "blue":
         if (rooms[socketId] === undefined) {
-          rooms[socketId] = seq;
-        }
-
-        if (player[seq] === undefined) {
-          player[seq] = "blue";
+          rooms[socketId] = `${seq}_${myTeam}`;
         }
 
         break;
 
       case "red":
         if (rooms[socketId] === undefined) {
-          rooms[socketId] = seq;
-        }
-
-        if (player[seq] === undefined) {
-          player[seq] = "red";
+          rooms[socketId] = `${seq}_${myTeam}`;
         }
 
         break;
@@ -63,18 +61,20 @@ io.on("connection", (socket) => {
     }
 
     const nowPlayer = Object.values(rooms).reduce((before, after) => {
+      const playerRoomSeq = after.split("_")[0];
+
       return {
         ...before,
-        [after]: before[after] ? (before[after] += 1) : 1,
+        [playerRoomSeq]: before[playerRoomSeq]
+          ? (before[playerRoomSeq] += 1)
+          : 1,
       };
     }, {});
 
     const nowPlayerCnt = nowPlayer[seq] ? nowPlayer[seq] : 0;
 
-    console.log(nowPlayerCnt);
-
     if (nowPlayerCnt > 2) {
-      io.to(socketId).emit("fullDraft");
+      io.to(socketId).emit("fullDraft", watchId);
     }
 
     if (nowPlayerCnt === 2) {
